@@ -3,12 +3,21 @@
 }
 
 body {
-
+    
     background-color:  white;
     color: black;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+.game-field {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.head-line {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .is-shown {
@@ -19,7 +28,7 @@ body {
 
 .footer {
 
-    max-width: 600px;
+   
     margin-top: auto;
     margin-bottom: 0 px;
     

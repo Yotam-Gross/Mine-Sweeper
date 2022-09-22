@@ -48,12 +48,22 @@ function implementMines(boardSize, board){
     if(boardSize === 4) gLevel.minez = 2
     if(boardSize === 8) gLevel.minez = 14
     if(boardSize === 12) gLevel.minez = 32
+
+    var boardCells = []
+
+    for(var i = 0; i < boardSize; i++){
+        for (var j = 0; j < boardSize; j++){
+            boardCells.push(board[i][j])
+        }
+    }
+    
     
     for(var k = 0; k < gLevel.minez; k++){
         
        
-        var i = getRandomInt(0, boardSize)
-        var j = getRandomInt(0, boardSize)
+        var tempCell = boardCells.splice(getRandomInt(0, boardCells.length), 1)
+        var i = tempCell[0].i
+        var j = tempCell[0].j
         
         board[i][j].isMine = true
     }
