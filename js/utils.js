@@ -37,6 +37,7 @@ function clearGame(){
     gminutesCounter = 0
     gLevel.minez = 0
     gGame.lives = 3
+    gGame.minezClicked = 0
 
     clearInterval(gTimerInterval)
 
@@ -53,7 +54,6 @@ function clearGame(){
     var elWin = document.querySelector('h4')
     elWin.innerText = gGame.lives + ' lives left'
 }
-
 
 function getRandomInt(min, max) {
 	min = Math.ceil(min);

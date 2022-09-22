@@ -1,7 +1,7 @@
 'use strict'
 
 
-const MINE = '💩'
+const MINE = '💥'
 const FLAG = '🏴‍☠️'
 
 var gBoard 
@@ -26,6 +26,7 @@ var gGame = {
     isOn: false,
     showCount: 0,
     markedCount: 0,
+    minezClicked: 0,
     secsPassed: 0,
     lives: 3,
 }
@@ -101,6 +102,7 @@ function setMinesNegsCount(board){
             if (board[i][j].isMine) {
                 board[i][j].minesNegsCount = MINE
             }
+            if(board[i][j].minesNegsCount === 0) board[i][j].minesNegsCount = ''
         }
     } 
     
@@ -130,7 +132,7 @@ function onRightClick(elCell, event, i, j){
 
     if(!gGame.isOn) return
 
-    gGame.markedCount++
+    // gGame.markedCount++
 
     if(gGame.showCount === 1 && gGame.markedCount === 0 ||
         gGame.showCount === 0 && gGame.markedCount === 1) timeCount()
@@ -138,6 +140,7 @@ function onRightClick(elCell, event, i, j){
     event.preventDefault()
     
     if(gBoard[i][j].isShown) return
+    console.table(gBoard);
 
     cellMarked(elCell, i, j)
 }
@@ -148,6 +151,8 @@ function onLeftClick(elCell, event, i, j){
     const cell = gBoard[i][j]
 
     if(cell.isShown) return
+
+    if(cell.isMarked) return
     
     gGame.showCount++
     if(gGame.showCount === 1 && gGame.markedCount === 0 ||
@@ -159,6 +164,7 @@ function onLeftClick(elCell, event, i, j){
     if(cell.isMine) {
     gGame.lives--
     gGame.showCount--
+    gGame.minezClicked++
     console.log(gGame.lives)
     var elWin = document.querySelector('h4')
     elWin.innerText =  gGame.lives + ' lives left'
@@ -169,7 +175,43 @@ function onLeftClick(elCell, event, i, j){
 
     isWin()
 
-    elCell.innerText = cell.minesNegsCount
+    elCell.classList.add('is-shown')
+    elCell.innerText = cell.minesNegsCount 
+    
+    if(!cell.minesNegsCount) expandShown(gBoard, i, j)
+    
+}
+
+function expandShown(board, rowIdx, colIdx){
+
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i >= board.length) continue
+        
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (j < 0 || j >= board[0].length) continue
+            if (i === rowIdx && j === colIdx) continue
+            
+             var currCell = board[i][j]
+             if(currCell.minesNegsCount !== MINE && !currCell.isMarked) {
+                //  if(currCell.minesNegsCount === '') expandShown(board, i, j)
+                 
+                var strHTML = '.cell-' + i + '-' + j
+
+                currCell.isShown = true
+                
+                var elCell = document.querySelector(strHTML)
+                elCell.innerText = currCell.minesNegsCount
+
+                elCell.classList.add("is-shown")
+                gGame.showCount++
+                isWin()
+
+
+             }
+             
+        }
+    }
+
 }
 
 function gameOver(){
@@ -186,13 +228,28 @@ function gameOver(){
     elWin.innerText = 'Game Over'
 
     var elWin = document.querySelector('h4')
-    elWin.innerText = ''   
+    elWin.innerText = '' 
+    
+    for(var i = 0; i < gLevel.size; i++){
+        for(var j = 0; j < gLevel.size; j++){
+            if(gBoard[i][j].minesNegsCount === MINE){
+
+                var strHTML = '.cell-' + i + '-' + j
+                var elCell = document.querySelector(strHTML)
+                elCell.innerText = gBoard[i][j].minesNegsCount
+            }
+
+        }
+    }
     }
 }
 
 function isWin(){
 
-    if(gGame.showCount === gLevel.size*gLevel.size - gLevel.minez){
+    console.log('minez', gLevel.minez, 'marked', gGame.markedCount, 'clicked', gGame.minezClicked, 'show', gGame.showCount);
+    
+    if(gGame.showCount >= gLevel.size*gLevel.size - gLevel.minez
+        && gLevel.minez <= gGame.markedCount + gGame.minezClicked){
         gGame.isOn = false
 
         var elMassege = document.querySelector("h3")
@@ -213,16 +270,15 @@ function cellMarked(elCell, i, j){
         elCell.innerText = ''
         gBoard[i][j].isMarked = false
         gGame.markedCount--
+        console.log('mark count ', gGame.markedCount);
         return
     } 
     elCell.innerText = FLAG
     gBoard[i][j].isMarked = true
     gGame.markedCount++
 
-}
-
-function expandShown(board, elCell,i, j){
-
+    console.log('mark count ', gGame.markedCount);
+    isWin()
 
 }
 
